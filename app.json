@@ -1,0 +1,41 @@
+{
+  "expo": {
+    "name": "kokoro.doctor",
+    "slug": "kokoro-doctor",
+    "version": "1.0.0",
+    "platforms": [
+      "ios",
+      "android",
+      "web"
+    ],
+    "newArchEnabled": true,
+    "plugins": [
+      "expo-font",
+      "expo-web-browser"
+    ],
+    "ios": {
+      "bundleIdentifier": "com.profcess.kokoro.doctor.app",
+      "buildNumber": "1",
+      "icon": "./assets/Icons/kokoro.png",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
+    },
+    "web": {
+      "bundler": "metro"
+    },
+    "entryPoint": "./index.js",
+    "android": {
+      "package": "com.profcess.kokoro.doctor.app"
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "6888dd46-a5c9-42fa-8a60-cbb4a6e0eb5a"
+      }
+    },
+    "owner": "kokoro_doctor"
+  }
+}
