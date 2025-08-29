@@ -1,42 +1,41 @@
 {
   "expo": {
-    "name": "KokoroDoctorNew",
-    "slug": "KokoroDoctorNew",
+    "name": "kokoro.doctor",
+    "slug": "kokoro-doctor",
     "version": "1.0.0",
-    "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
-    "scheme": "kokorodoctornew",
-    "userInterfaceStyle": "automatic",
+    "platforms": [
+      "ios",
+      "android",
+      "web"
+    ],
     "newArchEnabled": true,
+    "plugins": [
+      "expo-font",
+      "expo-web-browser"
+    ],
     "ios": {
-      "supportsTablet": true
-    },
-    "android": {
-      "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
-      },
-      "edgeToEdgeEnabled": true
+      "bundleIdentifier": "com.profcess.kokoro.doctor.app",
+      "buildNumber": "1",
+      "icon": "./assets/Icons/kokoro.png",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "web": {
-      "bundler": "metro",
-      "output": "static",
-      "favicon": "./assets/images/favicon.png"
+      "bundler": "metro"
     },
-    "plugins": [
-      "expo-router",
-      [
-        "expo-splash-screen",
-        {
-          "image": "./assets/images/splash-icon.png",
-          "imageWidth": 200,
-          "resizeMode": "contain",
-          "backgroundColor": "#ffffff"
-        }
-      ]
-    ],
-    "experiments": {
-      "typedRoutes": true
-    }
+    "entryPoint": "./index.js",
+    "android": {
+      "package": "com.profcess.kokoro.doctor.app"
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "6888dd46-a5c9-42fa-8a60-cbb4a6e0eb5a"
+      }
+    },
+    "owner": "kokoro_doctor"
   }
 }
