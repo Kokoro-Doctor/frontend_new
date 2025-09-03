@@ -1,10 +1,10 @@
-import React, { createContext, useEffect, useState, useContext } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import {
-  login,
-  signup,
-  logOut,
   handleGoogleLogin,
+  login,
+  logOut,
   restoreUserState,
+  signup,
 } from "../utils/AuthService";
 //import { View } from 'react-native';
 export const AuthContext = createContext();
@@ -156,3 +156,5 @@ export const AuthProvider = ({ children }) => {
   );
 };
 export const useAuth = () => useContext(AuthContext);
+
+

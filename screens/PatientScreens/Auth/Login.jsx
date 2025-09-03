@@ -1,20 +1,20 @@
-import React, { useContext, useEffect, useState } from "react";
+import { Ionicons } from "@expo/vector-icons";
+import { useContext, useEffect, useState } from "react";
 import {
-  View,
+  Image,
+  ImageBackground,
+  Platform,
+  SafeAreaView,
+  StatusBar,
+  StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
-  StyleSheet,
-  Image,
-  StatusBar,
-  ImageBackground,
-  Platform,
   useWindowDimensions,
-  SafeAreaView,
+  View,
 } from "react-native";
 import { AuthContext } from "../../../contexts/AuthContext";
 import { useGoogleAuth } from "../../../utils/AuthService";
-import { Ionicons } from "@expo/vector-icons";
 
 const Login = ({ navigation }) => {
   const { width } = useWindowDimensions();
@@ -27,17 +27,42 @@ const Login = ({ navigation }) => {
   const [request, response, promptAsync] = useGoogleAuth();
 
   useEffect(() => {
-    if (response) {
-      googleLogin(response)
-        .then(() => {
-          WebBrowser.dismissBrowser();
-          navigation.navigate("LandingPage");
-        })
-        .catch((error) => {
+    const doLogin = async () => {
+      if (response?.type === "success") {
+        try {
+          const user = await handleGoogleLogin(response); // <-- call your authService function directly
+          if (user) {
+            navigation.navigate("LandingPage");
+          }
+        } catch (error) {
           console.error("Google login error:", error);
-        });
-    }
-  }, [response, googleLogin, navigation]);
+        }
+      }
+    };
+    doLogin();
+  }, [response, navigation]);
+
+  // useEffect(() => {
+  //   const doLogin = async () => {
+  //     if (response) {
+  //       console.log("🔹 Google response:", JSON.stringify(response, null, 2));
+
+  //       try {
+  //         const user = await handleGoogleLogin(response);
+  //         console.log("✅ handleGoogleLogin returned:", user);
+
+  //         if (user) {
+  //           navigation.navigate("LandingPage");
+  //         } else {
+  //           console.log("⚠️ No user returned from handleGoogleLogin");
+  //         }
+  //       } catch (error) {
+  //         console.error("❌ Google login error in useEffect:", error);
+  //       }
+  //     }
+  //   };
+  //   doLogin();
+  // }, [response, navigation]);
 
   const handleGoogleLogin = () => {
     if (request) {
