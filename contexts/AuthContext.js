@@ -131,7 +131,7 @@ export const AuthProvider = ({ children }) => {
     try {
       const googleUser = await handleGoogleLogin(response);
       setUser(googleUser);
-      navigation.navigate("LandingPage");
+      // navigation.navigate("LandingPage");
     } catch (error) {
       console.error(`Google Login Failed: ${error.message}`);
     }
@@ -156,5 +156,3 @@ export const AuthProvider = ({ children }) => {
   );
 };
 export const useAuth = () => useContext(AuthContext);
-
-
