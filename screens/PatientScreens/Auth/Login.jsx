@@ -30,7 +30,7 @@ const Login = ({ navigation }) => {
     const doLogin = async () => {
       if (response?.type === "success") {
         try {
-          const user = await handleGoogleLogin(response); // <-- call your authService function directly
+          const user = await googleLogin(response); // <-- call your authService function directly
           if (user) {
             navigation.navigate("LandingPage");
           }
@@ -40,7 +40,7 @@ const Login = ({ navigation }) => {
       }
     };
     doLogin();
-  }, [response, navigation]);
+  }, [response, navigation, googleLogin]);
 
   // useEffect(() => {
   //   const doLogin = async () => {
@@ -64,7 +64,7 @@ const Login = ({ navigation }) => {
   //   doLogin();
   // }, [response, navigation]);
 
-  const handleGoogleLogin = () => {
+  const startGoogleLogin = () => {
     if (request) {
       promptAsync({ useProxy: false });
     } else {
@@ -184,7 +184,7 @@ const Login = ({ navigation }) => {
 
                 <TouchableOpacity
                   style={styles.googleButton}
-                  onPress={handleGoogleLogin}
+                  onPress={startGoogleLogin}
                   disabled={!request}
                 >
                   <Image
@@ -286,23 +286,23 @@ const Login = ({ navigation }) => {
             </TouchableOpacity>
 
             {/* Or Divider */}
-            {/* <View style={styles.mobileOrContainer}>
+            <View style={styles.mobileOrContainer}>
               <View style={styles.mobileOrLine} />
               <Text style={styles.mobileOrText}>Or</Text>
               <View style={styles.mobileOrLine} />
-            </View> */}
+            </View>
 
             {/* Google Sign In */}
-            {/* <TouchableOpacity
+            <TouchableOpacity
               style={styles.mobileGoogleButton}
-              onPress={handleGoogleLogin}
+              onPress={startGoogleLogin}
             >
               <Image
                 source={require("../../../assets/Images/google-icon.png")}
                 style={styles.mobileGoogleIcon}
               />
               <Text style={styles.mobileGoogleText}>Continue with Google</Text>
-            </TouchableOpacity> */}
+            </TouchableOpacity>
           </View>
         </View>
       )}
