@@ -25,50 +25,44 @@ const Login = ({ navigation }) => {
   const [rememberMe, setRememberMe] = useState(false);
   const { login, googleLogin } = useContext(AuthContext);
   const [request, response, promptAsync] = useGoogleAuth();
+  const [googleHandled, setGoogleHandled] = useState(false);
 
   useEffect(() => {
     const doLogin = async () => {
-      if (response?.type === "success") {
+      console.log("👉 useEffect triggered with response:", response);
+
+      if (response?.type === "success" && !googleHandled) {
+        setGoogleHandled(true); // ✅ mark as handled
+        console.log("✅ Google auth success, calling backend once...");
         try {
-          const user = await googleLogin(response); // <-- call your authService function directly
+          const user = await googleLogin(response);
+          console.log("✅ googleLogin returned user:", user);
+
           if (user) {
+            console.log("👉 Navigating to LandingPage");
             navigation.navigate("LandingPage");
+          } else {
+            console.log("❌ googleLogin returned null user");
           }
         } catch (error) {
-          console.error("Google login error:", error);
+          console.error("❌ Google login error in Login.jsx:", error);
         }
+      } else {
+        console.log(
+          "ℹ️ No success response from Google yet or already handled"
+        );
       }
     };
+
     doLogin();
-  }, [response, navigation, googleLogin]);
-
-  // useEffect(() => {
-  //   const doLogin = async () => {
-  //     if (response) {
-  //       console.log("🔹 Google response:", JSON.stringify(response, null, 2));
-
-  //       try {
-  //         const user = await handleGoogleLogin(response);
-  //         console.log("✅ handleGoogleLogin returned:", user);
-
-  //         if (user) {
-  //           navigation.navigate("LandingPage");
-  //         } else {
-  //           console.log("⚠️ No user returned from handleGoogleLogin");
-  //         }
-  //       } catch (error) {
-  //         console.error("❌ Google login error in useEffect:", error);
-  //       }
-  //     }
-  //   };
-  //   doLogin();
-  // }, [response, navigation]);
+  }, [response, navigation, googleHandled]);
 
   const startGoogleLogin = () => {
     if (request) {
+      console.log("👉 Starting Google login flow...");
       promptAsync({ useProxy: false });
     } else {
-      console.log("Google auth request not ready yet");
+      console.log("❌ Google auth request not ready yet");
     }
   };
 
