@@ -1,5 +1,6 @@
 {
   "expo": {
+    "owner": "kokoro_doctor",
     "name": "kokoro.doctor",
     "slug": "kokoro-doctor",
     "scheme": "kokoro",   
@@ -36,7 +37,6 @@
       "eas": {
         "projectId": "6888dd46-a5c9-42fa-8a60-cbb4a6e0eb5a"
       }
-    },
-    "owner": "kokoro_doctor"
+    }
   }
 }

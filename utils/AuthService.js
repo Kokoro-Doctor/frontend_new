@@ -1,33 +1,55 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { makeRedirectUri } from "expo-auth-session";
 import * as Google from "expo-auth-session/providers/google";
+import Constants from "expo-constants";
 import * as WebBrowser from "expo-web-browser";
-import { Platform } from "react-native";
 WebBrowser.maybeCompleteAuthSession();
 
 import {
   API_URL,
   androidClientId,
-  expoClientId,
   iosClientId,
-  webClientId,
+  webClientId
 } from "../env-vars";
 
+const getRedirectUri = () => {
+  const isExpoGo = Constants.executionEnvironment === "storeClient";
+  
+  if (isExpoGo) {
+    // Always use the proxy URI format for Expo Go
+    const owner = Constants.expoConfig?.owner;
+    const slug = Constants.expoConfig?.slug;
+    
+    if (!owner || !slug) {
+      console.warn("Missing owner or slug in expoConfig");
+      // Fallback to makeRedirectUri if config is missing
+      return AuthSession.makeRedirectUri({ useProxy: true });
+    }
 
-// Google Auth Request
+    return `https://auth.expo.dev/@${owner}/${slug}`;
+  } else {
+    // Use custom scheme for standalone builds
+    return "kokoro://oauthredirect";
+  }
+};
+
+const redirectUri = getRedirectUri();
+console.log("Google Redirect URI:", redirectUri);
+
 export const useGoogleAuth = () => {
+  console.log("🔍 Client IDs:", {
+    androidClientId: androidClientId?.substring(0, 20) + "...",
+    iosClientId: iosClientId?.substring(0, 20) + "...",
+    webClientId: webClientId?.substring(0, 20) + "...",
+  });
+  
   return Google.useAuthRequest({
     androidClientId,
     iosClientId,
     webClientId,
-    expoClientId,
-    // Web can request ID token, native will fall back to accessToken
-    responseType: Platform.OS === "web" ? "id_token" : "token",  
+    // expoClientId,
+    responseType: "id_token",
     scopes: ["openid", "profile", "email"],
-    redirectUri: makeRedirectUri({
-      native: "com.profcess.kokoro.doctor.app:/oauthredirect", // must match in Google console
-      useProxy: __DEV__, // only use proxy in dev
-    }),
+    redirectUri, // use the variable
   });
 };
 
@@ -136,21 +158,19 @@ export const getUserInfo = async (token) => {
 
 export const handleGoogleLogin = async (response) => {
   try {
-    let payload = {};
-
-    if (response?.type === "success") {
-      if (Platform.OS === "web") {
-        // Web gives id_token
-        const id_token = response.params?.id_token || response.authentication?.idToken;
-        payload = { token: id_token, type: "id" };
-        console.log("👉 Sending id_token to backend:", id_token?.slice(0, 10));
-      } else {
-        // iOS / Android gives accessToken
-        const accessToken = response.authentication?.accessToken;
-        payload = { token: accessToken, type: "access" };
-        console.log("👉 Sending accessToken to backend:", accessToken?.slice(0, 10));
-      }
+    if (response?.type !== "success") {
+      console.warn("⚠️ Google login cancelled or failed:", response);
+      return null;
     }
+
+    const id_token = response.params?.id_token || response.authentication?.idToken;
+    if (!id_token) {
+      console.error("❌ No ID token received from Google response:", response);
+      return null;
+    }
+
+    const payload = { token: id_token }; // 👈 always id_token
+    console.log("👉 Sending id_token to backend:", id_token.slice(0, 10));
 
     const res = await fetch(`${API_URL}/auth/google`, {
       method: "POST",
@@ -165,12 +185,21 @@ export const handleGoogleLogin = async (response) => {
 
     const data = await res.json();
     console.log("✅ Backend login success:", data);
+
+    if (data?.access_token) {
+      await AsyncStorage.setItem("@token", data.access_token);
+    }
+    if (data?.user) {
+      await AsyncStorage.setItem("@user", JSON.stringify(data.user));
+    }
+
     return data;
   } catch (err) {
-    console.error("❌ Google login error:", err);
+    console.error("❌ Google login error:", err.message || err);
     return null;
   }
 };
+
 
 export const restoreUserState = async () => {
   const token = await AsyncStorage.getItem("@token");
