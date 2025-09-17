@@ -1,6 +1,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Google from "expo-auth-session/providers/google";
 import Constants from "expo-constants";
+import * as AuthSession from "expo-auth-session";
 import * as WebBrowser from "expo-web-browser";
 WebBrowser.maybeCompleteAuthSession();
 
@@ -28,7 +29,10 @@ const getRedirectUri = () => {
     return `https://auth.expo.dev/@${owner}/${slug}`;
   } else {
     // Use custom scheme for standalone builds
-    return "kokoro://oauthredirect";
+  return AuthSession.makeRedirectUri({
+    native:
+        "com.googleusercontent.apps.569847732356-mv68e01dvj204ouqjj0k48a8hq54knh3:/oauthredirect",
+  });
   }
 };
 
